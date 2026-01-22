@@ -1,5 +1,6 @@
 import os
 import subprocess
+import json
 
 
 def update_metadata(img_path, lat, lon, text, desc):
@@ -30,6 +31,19 @@ def update_metadata(img_path, lat, lon, text, desc):
     except subprocess.CalledProcessError as e:
         print(f"Błąd ExifTool dla {img_path}: {e}")
 
+def save_coordinates(lat, lon, filename="config.json"):
+    data = {"latitude": lat, "longitude": lon}
+    with open(filename, 'w') as f:
+        json.dump(data, f)
+
+def load_coordinates(filename="config.json"):
+    if os.path.exists(filename):
+        with open(filename, 'r') as f:
+            data = json.load(f)
+            return data
+    else:
+        return None
+
 
 # --- KONFIGURACJA ---
 folder_path = "zdjecia"
@@ -38,8 +52,19 @@ if not os.path.exists(folder_path):
     print(f"Folder '{folder_path}' nie istnieje!")
 else:
     try:
-        lat_in = input("Podaj Latitude: ")
-        lon_in = input("Podaj Longitude: ")
+        saved = load_coordinates()  # wczytaj zapisane
+        if saved:
+            print(f"Poprzednie współrzędne: Lat={saved['latitude']}, Lon={saved['longitude']}")
+            lat_in = input("Podaj nową Latitude (Enter = użyj poprzedniej): ")
+            lon_in = input("Podaj nową Longitude (Enter = użyj poprzedniej): ")
+
+            lat_in = lat_in if lat_in != "" else saved['latitude']
+            lon_in = lon_in if lon_in != "" else saved['longitude']
+        else:
+            lat_in = input("Podaj Latitude: ")
+            lon_in = input("Podaj Longitude: ")
+
+        save_coordinates(lat_in, lon_in)
 
         for filename in os.listdir(folder_path):
             if filename.lower().endswith((".jpg", ".jpeg")):

@@ -9,3 +9,7 @@ Thumbs.db
 # env
 .env
 .env.local
+
+
+zdjecia/
+config.json
