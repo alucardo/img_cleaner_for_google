@@ -1,0 +1,11 @@
+# sys
+.DS_Store
+Thumbs.db
+.idea
+
+# logi=s
+*.log
+
+# env
+.env
+.env.local
